@@ -1,0 +1,20 @@
+{
+  "name": "filmhouse-booking-project",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/Nwachukwu-Uzor/filmhouse-booking-project.git",
+  "author": "Nwachukwu-Uzor <uzor1997@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "mongoose": "^7.0.3"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon inde.js"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
