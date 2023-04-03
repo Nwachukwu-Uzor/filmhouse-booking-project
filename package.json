@@ -5,10 +5,14 @@
   "repository": "https://github.com/Nwachukwu-Uzor/filmhouse-booking-project.git",
   "author": "Nwachukwu-Uzor <uzor1997@gmail.com>",
   "license": "MIT",
+  "type": "module",
   "dependencies": {
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "mongoose": "^7.0.3"
+    "express-winston": "^4.2.0",
+    "mongoose": "^7.0.3",
+    "winston": "^3.8.2",
+    "winston-mongodb": "^5.1.1"
   },
   "scripts": {
     "start": "node index.js",

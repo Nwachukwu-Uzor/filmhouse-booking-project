@@ -1,15 +1,12 @@
-const dotenv = require("dotenv");
+import * as dotenv from "dotenv";
 
 dotenv.config();
 
-const mongoUri =
-  process.env.ENVIRONMENT === "Test"
+export const environment = process.env.ENVIRONMENT ?? "production";
+
+export const mongoUri =
+  process.env.ENVIRONMENT === "Development"
     ? process.env.MONGO_DB_LOCAL_URI
     : process.env.MONGO_DB_LIVE_URI;
 
-const port = process.env.PORT;
-
-module.exports = {
-  mongoUri,
-  port,
-};
+export const port = process.env.PORT;

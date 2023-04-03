@@ -1,12 +1,8 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const BookingSchema = new mongoose.Schema({
   bookingNumber: String,
   userName: String,
 });
 
-const BookingModel = mongoose.model("bookings", BookingSchema);
-
-module.exports = {
-  BookingModel,
-};
+export const BookingModel = mongoose.model("bookings", BookingSchema);
