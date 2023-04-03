@@ -37,8 +37,8 @@ mongoose
   })
   .catch((err) => console.log(err));
 
-app.get("/", (req, res) => {
-  return res.status(200).json({ message: "App is running" });
+app.get("/health-check", (req, res) => {
+  return res.status(200).json({ message: "App is running!" });
 });
 
 app.post("/", (req, res) => {
