@@ -10,3 +10,7 @@ export const mongoUri =
     : process.env.MONGO_DB_LIVE_URI;
 
 export const port = process.env.PORT;
+export const location =
+  process.env.ENVIRONMENT === "Development"
+    ? "http://localhost:5000/api"
+    : "https://filmhouse-cinema.onrender.com/api";
