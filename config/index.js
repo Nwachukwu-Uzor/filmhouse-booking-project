@@ -14,3 +14,7 @@ export const location =
   process.env.ENVIRONMENT === "Development"
     ? "http://localhost:5000/api"
     : "https://filmhouse-cinema.onrender.com/api";
+
+export const emailAddress = process.env.EMAIL_ADDRESS;
+export const mailjetApiKey = process.env.MAILJET_API_KEY;
+export const mailjetApiSecret = process.env.MAILJET_API_SECRET;

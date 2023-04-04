@@ -1,13 +1,12 @@
 import express from "express";
-import mongoose from "mongoose";
 import expressWinston from "express-winston";
 import { format, transports } from "winston";
 import { productionLogger, developmentLogger } from "./src/utils/logger.js";
 import { swaggerDocs } from "./src/utils/swagger.js";
 import cors from "cors";
 
-import { mongoUri, port, environment } from "./config/index.js";
-import { router as bookingRoute } from "./src/routes/Booking.Route.js";
+import { port, environment } from "./config/index.js";
+import { bookingRouter, authRouter } from "./src/routes/index.js";
 import { dbConnection } from "./dbConnection.js";
 import { errorHandler } from "./src/middlewares/errorHandler.js";
 
@@ -70,8 +69,11 @@ app.use(
   })
 );
 
+// Registers the route for authentication
+app.use("/api/account", authRouter);
+
 // Register the route for booking
-app.use("/api/booking", bookingRoute);
+app.use("/api/booking", bookingRouter);
 
 app.listen(port, () => {
   dbConnection();

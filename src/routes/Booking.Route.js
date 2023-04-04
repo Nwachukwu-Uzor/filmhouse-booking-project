@@ -5,4 +5,4 @@ const router = express.Router();
 
 router.post("/create", createBooking);
 
-export { router };
+export default router;
