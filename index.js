@@ -34,27 +34,21 @@ if (environment === "Development") {
   );
 }
 
+swaggerDocs(app, port);
+
+/**
+ * @openapi
+ * /health-check
+ * get:
+ *  tag:
+ *    - HealthCheck
+ *    description: responds if app is running
+ *    responses:
+ *      200:
+ *        description: app is running
+ */
 app.get("/health-check", (req, res) => {
   return res.status(200).json({ message: "App is running!" });
-});
-
-app.post("/", (req, res) => {
-  const { body } = req.body;
-  return res
-    .status(200)
-    .json({ body: body, message: "Ok, body parser is working" });
-});
-
-app.get("/400", (req, res) => {
-  return res.status(400).json({ message: "Error Occurred" });
-});
-
-app.get("/500", (req, res) => {
-  return res.status(500).json({ message: "Error Occurred" });
-});
-
-app.get("/error", (req, res) => {
-  throw new Error("Unable to proceed, error occurred");
 });
 
 const customErrorLogFormat = format.printf(({ level, meta, timestamp }) => {
@@ -78,8 +72,6 @@ app.use(
 
 // Register the route for booking
 app.use("/api/booking", bookingRoute);
-
-swaggerDocs(app, port);
 
 app.listen(port, () => {
   dbConnection();
