@@ -2,6 +2,7 @@ import UserModel from "../models/User.Model.js";
 import { environment, location } from "../../config/index.js";
 import { developmentLogger, productionLogger } from "../utils/logger.js";
 import { sendMail } from "../services/index.js";
+import { emailChannel } from "../queue/emailQueue.js";
 
 export const createAccount = async (req, res) => {
   const { email, password, username, address } = req.body;
@@ -39,10 +40,22 @@ export const createAccount = async (req, res) => {
 
     const newUser = await UserModel.create({ email, password, username });
 
-   sendMail(
+    //  sendMail(
+    //     email,
+    //     `<div><h2>Account Created Successfully</h2></div>`,
+    //     "Account Created"
+    //   );
+
+    const emailParameters = {
       email,
-      `<div><h2>Account Created Successfully</h2></div>`,
-      "Account Created"
+      body: `<div><h1>Email Sent Successfully</h1></div>`,
+
+      subject: "Account Created Successfully",
+    };
+
+    emailChannel.sendToQueue(
+      "email-queue",
+      Buffer.from(JSON.stringify(emailParameters))
     );
 
     res.setHeader("Location", `${location}/account/${newUser._id}`);
