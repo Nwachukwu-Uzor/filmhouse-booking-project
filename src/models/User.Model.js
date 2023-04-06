@@ -22,6 +22,10 @@ const userSchema = Schema({
     required: true,
     unique: true,
   },
+  googleId: {
+    type: String,
+    default: "",
+  }
 });
 
 // Use pre middleware to hash the password before saving the model

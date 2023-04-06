@@ -53,10 +53,10 @@ export const createAccount = async (req, res) => {
       subject: "Account Created Successfully",
     };
 
-    emailChannel.sendToQueue(
-      "email-queue",
-      Buffer.from(JSON.stringify(emailParameters))
-    );
+    // emailChannel.sendToQueue(
+    //   "email-queue",
+    //   Buffer.from(JSON.stringify(emailParameters))
+    // );
 
     res.setHeader("Location", `${location}/account/${newUser._id}`);
     return res.status(201).json({
