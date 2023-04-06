@@ -4,17 +4,34 @@ import { format, transports } from "winston";
 import { productionLogger, developmentLogger } from "./src/utils/logger.js";
 import { swaggerDocs } from "./src/utils/swagger.js";
 import cors from "cors";
+import passport from "passport";
 
 import { port, environment } from "./config/index.js";
 import { bookingRouter, authRouter } from "./src/routes/index.js";
 import { dbConnection } from "./dbConnection.js";
 import { errorHandler } from "./src/middlewares/errorHandler.js";
+import cookieSession from "cookie-session";
 
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    methods: "GET, POST, PUT, DELETE",
+    credentials: true,
+  })
+);
+app.use(
+  cookieSession({
+    name: "filmhouse-booking",
+    keys: ["technovate"],
+    maxAge: 24 * 60 * 60 * 100,
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(errorHandler);
 
 if (environment === "Development") {
