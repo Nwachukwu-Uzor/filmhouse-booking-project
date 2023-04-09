@@ -23,14 +23,29 @@ router.get("/login/success", (req, res) => {
       .json({ message: "login success", data: { user: req?.user } });
   }
 });
+
 router.post("/register", createAccount);
 router.get(
   "/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
+
 router.get(
   "/google/callback",
   passport.authenticate("google", {
+    successRedirect: googleClientRedirectUrl,
+    failureRedirect: "/login/failed",
+  })
+);
+
+router.get(
+  "/facebook",
+  passport.authenticate("facebook", { scope: ["profile"] })
+);
+
+router.get(
+  "/facebook/callback",
+  passport.authenticate("facebook", {
     successRedirect: googleClientRedirectUrl,
     failureRedirect: "/login/failed",
   })

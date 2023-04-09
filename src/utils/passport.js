@@ -1,9 +1,12 @@
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import { Strategy as FacebookStrategy } from "passport-facebook";
 import passport from "passport";
 import {
   googleClientId,
   googleClientSecret,
   location,
+  facebookAppId,
+  facebookAppSecret
 } from "../../config/index.js";
 import UserModel from "../models/User.Model.js";
 
@@ -14,24 +17,64 @@ passport.use(
       clientSecret: googleClientSecret,
       callbackURL: `/api/auth/google/callback`,
     },
-    async function (accessToken, refreshToken, profile, /**cb */ done) {
-      console.log({ profile });
-      console.log("here");
+    async function (accessToken, refreshToken, profile, /**done */ cb) {
       try {
-        const existingUser = await UserModel.findOne({ email: profile?.email });
+        const existingUser = await UserModel.findOne({
+          $or: [{ email: profile?._json?.email }, { googleId: profile?.id }],
+        });
 
         if (existingUser) {
-            cb(null, existingUser)
+          if (!existingUser?.googleId.trim().length) {
+            existingUser.googleId = profile?.id;
+            await existingUser.save();
+          }
+          return cb(null, existingUser);
         }
+        const newUser = await UserModel.create({
+          googleId: profile?.id,
+          email: profile?._json?.email,
+          emailConfirmed: profile?._json?.email_verified,
+          username: profile?._json?.email,
+        });
+
+        return cb(null, newUser);
       } catch (error) {
-        cb(error, null)
+        cb(error, null);
       }
+    }
+  )
+);
+passport.use(
+  new FacebookStrategy(
+    {
+      clientID: facebookAppId,
+      clientSecret: facebookAppSecret,
+      callbackURL: `/api/auth/facebook/callback`,
+    },
+    async function (accessToken, refreshToken, profile, /**done */ cb) {
+      try {
+        const existingUser = await UserModel.findOne({
+          $or: [{ email: profile?._json?.email }, { googleId: profile?.id }],
+        });
 
-      //   UserModel.findOrCreate({ googleId: profile.id }, function (err, user) {
-      //     return cb(err, user);
-      //   });
+        if (existingUser) {
+          if (!existingUser?.googleId.trim().length) {
+            existingUser.googleId = profile?.id;
+            await existingUser.save();
+          }
+          return cb(null, existingUser);
+        }
+        const newUser = await UserModel.create({
+          googleId: profile?.id,
+          email: profile?._json?.email,
+          emailConfirmed: profile?._json?.email_verified,
+          username: profile?._json?.email,
+        });
 
-      //   done(null, profile);
+        return cb(null, newUser);
+      } catch (error) {
+        cb(error, null);
+      }
     }
   )
 );

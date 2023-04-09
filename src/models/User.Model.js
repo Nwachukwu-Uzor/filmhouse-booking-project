@@ -4,6 +4,10 @@ import bcrypt from "bcrypt";
 const { Schema, model } = mongoose;
 
 const userSchema = Schema({
+  googleId: {
+    type: String,
+    default: "",
+  },
   username: {
     type: String,
     required: true,
@@ -11,7 +15,11 @@ const userSchema = Schema({
   },
   password: {
     type: String,
-    required: true,
+    required: [
+      function () {
+        return this.googleId === null || this.googleId.trim().length === 0;
+      },
+    ],
   },
   emailConfirmed: {
     type: Boolean,
@@ -22,10 +30,6 @@ const userSchema = Schema({
     required: true,
     unique: true,
   },
-  googleId: {
-    type: String,
-    default: "",
-  }
 });
 
 // Use pre middleware to hash the password before saving the model

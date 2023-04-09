@@ -24,3 +24,5 @@ export const googleClientRedirectUrl =
   environment === "Development"
     ? "http://localhost:3000"
     : "https://film-book-ui.vercel.app/";
+export const facebookAppSecret = process.env.FACEBOOK_APP_SECRET;
+export const facebookAppId = process.env.FACEBOOK_APP_ID;

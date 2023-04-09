@@ -57,6 +57,11 @@ export const createAccount = async (req, res) => {
     //   "email-queue",
     //   Buffer.from(JSON.stringify(emailParameters))
     // );
+    await sendMail(
+      emailParameters.email,
+      emailParameters.body,
+      emailParameters.subject
+    );
 
     res.setHeader("Location", `${location}/account/${newUser._id}`);
     return res.status(201).json({
