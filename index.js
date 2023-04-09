@@ -6,7 +6,6 @@ import passport from "passport";
 import cookieSession from "cookie-session";
 
 import { productionLogger, developmentLogger } from "./src/utils/logger.js";
-import { swaggerDocs } from "./src/utils/swagger.js";
 import { port, environment } from "./config/index.js";
 import { bookingRouter, authRouter } from "./src/routes/index.js";
 import { dbConnection } from "./dbConnection.js";
