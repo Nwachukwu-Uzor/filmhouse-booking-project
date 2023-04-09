@@ -68,7 +68,7 @@ if (environment === "Development") {
   );
 }
 
-swaggerDocs(app, port);
+// swaggerDocs(app, port);
 
 /**
  * @openapi
