@@ -1,8 +1,8 @@
-import UserModel from "../models/User.Model.js";
+import { UserModel, Token, TokenModel } from "../models/index.js";
+
 import { environment, location } from "../../config/index.js";
 import { developmentLogger, productionLogger } from "../utils/logger.js";
 import { sendMail } from "../services/index.js";
-import { emailChannel } from "../queue/emailQueue.js";
 
 export const createAccount = async (req, res) => {
   const { email, password, username, address } = req.body;
@@ -53,10 +53,10 @@ export const createAccount = async (req, res) => {
       subject: "Account Created Successfully",
     };
 
-    emailChannel.sendToQueue(
-      "email-queue",
-      Buffer.from(JSON.stringify(emailParameters))
-    );
+
+    const confirmationToken = await TokenModel.create({
+      user: newUser._id
+    });
 
     res.setHeader("Location", `${location}/account/${newUser._id}`);
     return res.status(201).json({

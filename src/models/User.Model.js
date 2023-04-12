@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 
 const { Schema, model } = mongoose;
 
-const userSchema = Schema({
+const userSchema = new Schema({
   username: {
     type: String,
     required: true,
@@ -21,6 +21,10 @@ const userSchema = Schema({
     type: String,
     required: true,
     unique: true,
+  },
+  registeredOn: {
+    type: Date,
+    default: Date.now(),
   },
 });
 
@@ -45,4 +49,4 @@ userSchema.pre("save", async function (next) {
   }
 });
 
-export default mongoose.model("User", userSchema);
+export const UserModel = mongoose.model("User", userSchema);

@@ -29,4 +29,4 @@ const BookingSchema = new Schema({
   },
 });
 
-export default model("booking", BookingSchema);
+export const BookingModel = model("booking", BookingSchema);
