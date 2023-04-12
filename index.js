@@ -1,20 +1,54 @@
 import express from "express";
 import expressWinston from "express-winston";
 import { format, transports } from "winston";
-import { productionLogger, developmentLogger } from "./src/utils/logger.js";
-import { swaggerDocs } from "./src/utils/swagger.js";
 import cors from "cors";
+import passport from "passport";
+import cookieSession from "cookie-session";
 
+import { productionLogger, developmentLogger } from "./src/utils/logger.js";
 import { port, environment } from "./config/index.js";
 import { bookingRouter, authRouter } from "./src/routes/index.js";
 import { dbConnection } from "./dbConnection.js";
 import { errorHandler } from "./src/middlewares/errorHandler.js";
+import { passportSetup } from "./src/utils/passport.js";
+import session from "express-session";
 
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    methods: "GET, POST, PUT, DELETE",
+    credentials: true,
+  })
+);
+
+// const sess = session({
+//   secret: "test-secret",
+//   resave: false,
+//   saveUninitialized: true,
+//   cookie: {
+//     maxAge: 24 * 60 * 60 * 100,
+//   },
+// });
+
+// if (environment === "production") {
+//   app.set("trust proxy", 1); // trust first proxy
+//   sess.cookie.secure = true; // serve secure cookies
+// }
+
+app.use(
+  cookieSession({
+    name: "filmhouse-booking",
+    keys: ["technovate"],
+    maxAge: 24 * 60 * 60 * 100,
+  })
+);
+// app.use(session(sess));
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(errorHandler);
 
 if (environment === "Development") {
@@ -33,7 +67,7 @@ if (environment === "Development") {
   );
 }
 
-swaggerDocs(app, port);
+// swaggerDocs(app, port);
 
 /**
  * @openapi
@@ -70,7 +104,7 @@ app.use(
 );
 
 // Registers the route for authentication
-app.use("/api/account", authRouter);
+app.use("/api/auth", authRouter);
 
 // Register the route for booking
 app.use("/api/booking", bookingRouter);

@@ -18,3 +18,11 @@ export const location =
 export const emailAddress = process.env.EMAIL_ADDRESS;
 export const mailjetApiKey = process.env.MAILJET_API_KEY;
 export const mailjetApiSecret = process.env.MAILJET_API_SECRET;
+export const googleClientId = process.env.GOOGLE_CLIENT_ID;
+export const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
+export const googleClientRedirectUrl =
+  environment === "Development"
+    ? "http://localhost:3000"
+    : "https://film-book-ui.vercel.app/";
+export const facebookAppSecret = process.env.FACEBOOK_APP_SECRET;
+export const facebookAppId = process.env.FACEBOOK_APP_ID;

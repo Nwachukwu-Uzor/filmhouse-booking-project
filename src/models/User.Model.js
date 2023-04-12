@@ -3,7 +3,11 @@ import bcrypt from "bcrypt";
 
 const { Schema, model } = mongoose;
 
-const userSchema = new Schema({
+const userSchema = Schema({
+  googleId: {
+    type: String,
+    default: "",
+  },
   username: {
     type: String,
     required: true,
@@ -11,7 +15,11 @@ const userSchema = new Schema({
   },
   password: {
     type: String,
-    required: true,
+    required: [
+      function () {
+        return this.googleId === null || this.googleId.trim().length === 0;
+      },
+    ],
   },
   emailConfirmed: {
     type: Boolean,
@@ -49,4 +57,4 @@ userSchema.pre("save", async function (next) {
   }
 });
 
-export const UserModel = mongoose.model("User", userSchema);
+export const UserModel = model("User", userSchema);
