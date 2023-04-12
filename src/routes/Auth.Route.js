@@ -1,9 +1,11 @@
 import express from "express";
 import passport from "passport";
+import fs from "fs";
 
 import { createAccount } from "../controllers/Auth.Controller.js";
-import { googleClientRedirectUrl } from "../../config/index.js";
-
+import { clientUrl } from "../../config/index.js";
+import { upload } from "../../config/multer.js";
+import { uploadImage } from "../services/imageService.js";
 const router = express.Router();
 
 router.get("/login/failed", (req, res) => {
@@ -12,7 +14,7 @@ router.get("/login/failed", (req, res) => {
 
 router.get("/logout", (req, res) => {
   req?.logout();
-  res.redirect(googleClientRedirectUrl);
+  res.redirect(clientUrl);
 });
 
 router.get("/login/success", (req, res) => {
@@ -25,6 +27,24 @@ router.get("/login/success", (req, res) => {
 });
 
 router.post("/register", createAccount);
+
+router.post("/uploadFile", upload.single("image"), async (req, res) => {
+  try {
+    const uploader = async (path) => uploadImage(path, "Images");
+    const currentDirection = process.cwd();
+    const file = req.file;
+
+    const newPath = await uploader(file?.path);
+    fs.unlink(file?.path);
+
+    return res
+      .status(200)
+      .json({ message: "File Upload Success", data: { path: newPath } });
+  } catch (error) {
+    return res.status(500).json({ message: `Error: ${error.message}` });
+  }
+});
+
 router.get(
   "/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
@@ -33,7 +53,7 @@ router.get(
 router.get(
   "/google/callback",
   passport.authenticate("google", {
-    successRedirect: googleClientRedirectUrl,
+    successRedirect: clientUrl,
     failureRedirect: "/login/failed",
   })
 );
@@ -46,7 +66,7 @@ router.get(
 router.get(
   "/facebook/callback",
   passport.authenticate("facebook", {
-    successRedirect: googleClientRedirectUrl,
+    successRedirect: clientUrl,
     failureRedirect: "/login/failed",
   })
 );

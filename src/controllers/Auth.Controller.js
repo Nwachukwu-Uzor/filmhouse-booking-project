@@ -1,6 +1,6 @@
-import { UserModel, Token, TokenModel } from "../models/index.js";
+import { UserModel, TokenModel } from "../models/index.js";
 
-import { environment, location } from "../../config/index.js";
+import { environment, location, clientUrl } from "../../config/index.js";
 import { developmentLogger, productionLogger } from "../utils/logger.js";
 import { sendMail } from "../services/index.js";
 
@@ -46,19 +46,23 @@ export const createAccount = async (req, res) => {
     //     "Account Created"
     //   );
 
+    const confirmationToken = await TokenModel.create({
+      user: newUser._id,
+    });
+
+    const confirmUrl = `${clientUrl}/confirm-account?token=${confirmationToken._doc.token}&&user_id=${newUser._id}`;
+
     const emailParameters = {
       email,
-      body: `<div><h1>Email Sent Successfully</h1></div>`,
+      body: `<div>
+        <h3>Dear ${username}</h3>
+        <p>You account has been created successfull, please click the link below to confirm your accout</p>
+        <a href=${confirmUrl}>Confirm</a>
+      </div>`,
 
       subject: "Account Created Successfully",
     };
 
-
-    const confirmationToken = await TokenModel.create({
-      user: newUser._id
-    });
-
-    
     await sendMail(
       emailParameters.email,
       emailParameters.body,

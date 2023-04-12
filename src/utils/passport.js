@@ -8,7 +8,7 @@ import {
   facebookAppId,
   facebookAppSecret
 } from "../../config/index.js";
-import UserModel from "../models/User.Model.js";
+import {UserModel} from "../models/index.js";
 
 passport.use(
   new GoogleStrategy(

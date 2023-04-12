@@ -1,4 +1,4 @@
-import BookingModel from "../models/Booking.Model.js";
+import {BookingModel} from "../models/index.js";
 import { generateBookingNumber } from "../utils/generateBookingNumber.js";
 import { environment, location } from "../../config/index.js";
 import { developmentLogger, productionLogger } from "../utils/logger.js";
