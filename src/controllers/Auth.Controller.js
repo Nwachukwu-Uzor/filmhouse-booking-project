@@ -1,11 +1,13 @@
-import { UserModel, TokenModel } from "../models/index.js";
+import fs from "fs";
+import { UserModel, TokenModel, ImageModel } from "../models/index.js";
 
 import { environment, location, clientUrl } from "../../config/index.js";
 import { developmentLogger, productionLogger } from "../utils/logger.js";
+import { uploadImage } from "../services/imageService.js";
 import { sendMail } from "../services/index.js";
 
 export const createAccount = async (req, res) => {
-  const { email, password, username, address } = req.body;
+  const { email, password, username } = req.body;
 
   const logMessage = `headers: ${JSON.stringify(
     req.headers
@@ -38,17 +40,32 @@ export const createAccount = async (req, res) => {
       return res.status(400).json({ message: "Username already exists" });
     }
 
-    const newUser = await UserModel.create({ email, password, username });
+    const newUser = new UserModel({ email, password, username });
 
-    //  sendMail(
-    //     email,
-    //     `<div><h2>Account Created Successfully</h2></div>`,
-    //     "Account Created"
-    //   );
+    if (req.file) {
+      const uploader = async (path) => uploadImage(path, "Images");
+      const file = req.file;
+
+      const newPath = await uploader(file?.path);
+      fs.unlink(file?.path, (err) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log("Deleted");
+        }
+      });
+      const userAvatar = await ImageModel.create({
+        url: newPath?.url,
+      });
+
+      newUser.avatar = userAvatar?._id;
+    }
 
     const confirmationToken = await TokenModel.create({
       user: newUser._id,
     });
+
+    await newUser.save();
 
     const confirmUrl = `${clientUrl}/confirm-account?token=${confirmationToken._doc.token}&&user_id=${newUser._id}`;
 

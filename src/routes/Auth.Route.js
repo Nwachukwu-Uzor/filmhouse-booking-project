@@ -26,12 +26,11 @@ router.get("/login/success", (req, res) => {
   }
 });
 
-router.post("/register", createAccount);
+router.post("/register", upload.single("image"), createAccount);
 
 router.post("/uploadFile", upload.single("image"), async (req, res) => {
   try {
     const uploader = async (path) => uploadImage(path, "Images");
-    const currentDirection = process.cwd();
     const file = req.file;
 
     const newPath = await uploader(file?.path);

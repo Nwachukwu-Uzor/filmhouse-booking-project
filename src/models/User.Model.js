@@ -4,6 +4,10 @@ import bcrypt from "bcrypt";
 const { Schema, model } = mongoose;
 
 const userSchema = Schema({
+  avatar: {
+    ref: "Image",
+    type: Schema.Types.ObjectId,
+  },
   googleId: {
     type: String,
     default: "",

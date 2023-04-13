@@ -29,3 +29,5 @@ export const facebookAppId = process.env.FACEBOOK_APP_ID;
 export const cloudinaryApiKey = process.env.CLOUDINARY_API_KEY;
 export const cloudinaryApiSecret = process.env.CLOUDINARY_API_SECRET;
 export const cloudinaryCloudName = process.env.CLOUDINARY_CLOUD_NAME;
+export const sendgridApiKey = process.env.SENDGRID_API_KEY;
+export const sendgridVerifiedSender = process.env.SENDGRID_VERIFIED_SENDER;
