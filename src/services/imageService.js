@@ -20,6 +20,6 @@ export const uploadImage = async (file, folder) => {
       id: upload?.public_id,
     };
   } catch (error) {
-    console.log(error);
+    throw new Error(error.message);
   }
 };

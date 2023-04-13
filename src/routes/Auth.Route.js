@@ -35,7 +35,13 @@ router.post("/uploadFile", upload.single("image"), async (req, res) => {
     const file = req.file;
 
     const newPath = await uploader(file?.path);
-    fs.unlink(file?.path);
+    fs.unlink(file?.path, (err) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log("Deleted");
+      }
+    });
 
     return res
       .status(200)
