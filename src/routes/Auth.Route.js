@@ -5,6 +5,8 @@ import fs from "fs";
 import { createAccount, loginUser } from "../controllers/Auth.Controller.js";
 import { clientUrl } from "../../config/index.js";
 import { upload } from "../../config/multer.js";
+import { auth } from "../middlewares/auth.js";
+
 const router = express.Router();
 
 router.post("/register", upload.single("image"), createAccount);
