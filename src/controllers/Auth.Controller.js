@@ -1,6 +1,7 @@
 import fs from "fs";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { validationResult } from "express-validator";
 
 import { UserModel, TokenModel, ImageModel } from "../models/index.js";
 
@@ -16,17 +17,13 @@ import { uploadImage } from "../services/imageService.js";
 import { sendMail } from "../services/index.js";
 
 export const createAccount = async (req, res) => {
-  const { email, password, username } = req.body;
+  const errors = validationResult(req);
 
-  const logMessage = `headers: ${JSON.stringify(
-    req.headers
-  )} body: ${JSON.stringify(req.body)}`;
-
-  if (environment === "Development") {
-    developmentLogger.log("info", logMessage);
-  } else {
-    productionLogger.log("info", logMessage);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ message: errors.array() });
   }
+
+  const { email, password, username } = req.body;
 
   try {
     const promises = [];
@@ -154,6 +151,12 @@ export const loginUser = async (req, res) => {
       .status(200)
       .json({ data: { token, message: "Login Successful" } });
   } catch (error) {
+    if (environment === "Development") {
+      developmentLogger.log("error", JSON.stringify(error));
+    } else {
+      productionLogger.log("error", JSON.stringify(error));
+    }
+
     return res.status(500).json({ message: error.message });
   }
 };

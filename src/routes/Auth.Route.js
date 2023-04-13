@@ -1,6 +1,6 @@
 import express from "express";
 import passport from "passport";
-import fs from "fs";
+import { check } from "express-validator";
 
 import { createAccount, loginUser } from "../controllers/Auth.Controller.js";
 import { clientUrl } from "../../config/index.js";
@@ -9,8 +9,36 @@ import { auth } from "../middlewares/auth.js";
 
 const router = express.Router();
 
-router.post("/register", upload.single("image"), createAccount);
-router.post("/login", loginUser);
+router.post(
+  "/register",
+  check("password")
+    .exists()
+    .withMessage("Password is required")
+    .isLength({ min: 7 })
+    .withMessage("Password must be at least 7 characters"),
+  check("email")
+    .exists()
+    .withMessage("Email is required")
+    .isEmail()
+    .withMessage("Please provide a valid email address"),
+  upload.single("image"),
+  createAccount
+);
+
+router.post(
+  "/login",
+  check("password")
+    .exists()
+    .withMessage("Password is required")
+    .isLength({ min: 7 })
+    .withMessage("Password must be at least 7 characters"),
+  check("email")
+    .exists()
+    .withMessage("Email is required")
+    .isEmail()
+    .withMessage("Please provide a valid email address"),
+  loginUser
+);
 
 // OAuth Routes
 router.get("/login/failed", (req, res) => {

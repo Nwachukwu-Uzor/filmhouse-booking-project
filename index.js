@@ -6,12 +6,11 @@ import passport from "passport";
 import cookieSession from "cookie-session";
 
 import { productionLogger, developmentLogger } from "./src/utils/logger.js";
+import { requestBodyLogger } from "./src/middlewares/requestBodyLogger.js";
 import { port, environment } from "./config/index.js";
-import { bookingRouter, authRouter } from "./src/routes/index.js";
+import { bookingRouter, authRouter, eventRouter } from "./src/routes/index.js";
 import { dbConnection } from "./dbConnection.js";
 import { errorHandler } from "./src/middlewares/errorHandler.js";
-import { passportSetup } from "./src/utils/passport.js";
-import session from "express-session";
 
 const app = express();
 
@@ -24,20 +23,6 @@ app.use(
     credentials: true,
   })
 );
-
-// const sess = session({
-//   secret: "test-secret",
-//   resave: false,
-//   saveUninitialized: true,
-//   cookie: {
-//     maxAge: 24 * 60 * 60 * 100,
-//   },
-// });
-
-// if (environment === "production") {
-//   app.set("trust proxy", 1); // trust first proxy
-//   sess.cookie.secure = true; // serve secure cookies
-// }
 
 app.use(
   cookieSession({
@@ -67,19 +52,8 @@ if (environment === "Development") {
   );
 }
 
-// swaggerDocs(app, port);
+app.use(requestBodyLogger);
 
-/**
- * @openapi
- * /health-check
- * get:
- *  tag:
- *    - HealthCheck
- *    description: responds if app is running
- *    responses:
- *      200:
- *        description: app is running
- */
 app.get("/health-check", (req, res) => {
   return res.status(200).json({ message: "App is running!" });
 });
@@ -109,14 +83,18 @@ app.use("/api/auth", authRouter);
 // Register the route for booking
 app.use("/api/booking", bookingRouter);
 
+// Registers the route for events
+app.use("/api/event", eventRouter);
+
 app.listen(port, () => {
   dbConnection();
   if (environment === "Development") {
     developmentLogger.log("info", `Server is running at ${port}`);
   }
+  console.log(`🚀 App is running at ${port}`);
 });
 
 // 404 Route
-app.use("*", (req, res) => {
+app.use("*", (_req, res) => {
   return res.status(404).json({ message: "Route not found" });
 });

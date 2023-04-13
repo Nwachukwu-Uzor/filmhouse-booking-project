@@ -8,7 +8,7 @@ export function dbConnection() {
       useUnifiedTopology: true,
     })
     .then(() => {
-      console.log("Connection Successful");
+      console.log(`✅ Connection Successful`);
     })
     .catch((err) => console.log(err));
 }

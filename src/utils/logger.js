@@ -1,5 +1,5 @@
 import { createLogger, format, transports } from "winston";
-import { mongoUri, port, environment } from "../../config/index.js";
+import { mongoUri } from "../../config/index.js";
 import "winston-mongodb";
 
 export const productionLogger = createLogger({
