@@ -2,12 +2,15 @@ import express from "express";
 import passport from "passport";
 import fs from "fs";
 
-import { createAccount } from "../controllers/Auth.Controller.js";
+import { createAccount, loginUser } from "../controllers/Auth.Controller.js";
 import { clientUrl } from "../../config/index.js";
 import { upload } from "../../config/multer.js";
-import { uploadImage } from "../services/imageService.js";
 const router = express.Router();
 
+router.post("/register", upload.single("image"), createAccount);
+router.post("/login", loginUser);
+
+// OAuth Routes
 router.get("/login/failed", (req, res) => {
   return res.status(404).json({ message: "Login Failed" });
 });
@@ -23,30 +26,6 @@ router.get("/login/success", (req, res) => {
     return res
       .status(200)
       .json({ message: "login success", data: { user: req?.user } });
-  }
-});
-
-router.post("/register", upload.single("image"), createAccount);
-
-router.post("/uploadFile", upload.single("image"), async (req, res) => {
-  try {
-    const uploader = async (path) => uploadImage(path, "Images");
-    const file = req.file;
-
-    const newPath = await uploader(file?.path);
-    fs.unlink(file?.path, (err) => {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log("Deleted");
-      }
-    });
-
-    return res
-      .status(200)
-      .json({ message: "File Upload Success", data: { path: newPath } });
-  } catch (error) {
-    return res.status(500).json({ message: `Error: ${error.message}` });
   }
 });
 

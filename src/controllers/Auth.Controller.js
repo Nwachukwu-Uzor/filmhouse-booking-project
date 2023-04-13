@@ -1,7 +1,16 @@
 import fs from "fs";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+
 import { UserModel, TokenModel, ImageModel } from "../models/index.js";
 
-import { environment, location, clientUrl } from "../../config/index.js";
+import {
+  environment,
+  location,
+  clientUrl,
+  tokenIssuer,
+  tokenSecret,
+} from "../../config/index.js";
 import { developmentLogger, productionLogger } from "../utils/logger.js";
 import { uploadImage } from "../services/imageService.js";
 import { sendMail } from "../services/index.js";
@@ -86,10 +95,23 @@ export const createAccount = async (req, res) => {
       emailParameters.subject
     );
 
+    const token = jwt.sign(
+      {
+        user_id: newUser._id,
+        email: newUser._doc.email,
+        phone: newUser._doc.phone,
+      },
+      tokenSecret,
+      { issuer: tokenIssuer, expiresIn: "2h" }
+    );
+
     res.setHeader("Location", `${location}/account/${newUser._id}`);
     return res.status(201).json({
-      message:
-        "Successfully registered, check your email for confirmation link.",
+      data: {
+        message:
+          "Successfully registered, check your email for confirmation link.",
+        token,
+      },
     });
   } catch (error) {
     if (environment === "Development") {
@@ -101,5 +123,37 @@ export const createAccount = async (req, res) => {
     return res
       .status(400)
       .json({ message: `Registeration failed: ${error?.message ?? ""}` });
+  }
+};
+
+export const loginUser = async (req, res) => {
+  const { password, email } = req.body;
+  try {
+    const user = await UserModel.findOne({ email });
+    if (!user) {
+      return res.status(401).json({ message: "Invalid username or password" });
+    }
+
+    const isPasswordCorrect = await bcrypt.compare(password, user?.password);
+
+    if (!isPasswordCorrect) {
+      return res.status(401).json({ message: "Invalid username or password" });
+    }
+
+    const token = jwt.sign(
+      {
+        user_id: user._id,
+        email: user._doc.email,
+        phone: user._doc.phone,
+      },
+      tokenSecret,
+      { issuer: tokenIssuer, expiresIn: "2h" }
+    );
+
+    return res
+      .status(200)
+      .json({ data: { token, message: "Login Successful" } });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
   }
 };

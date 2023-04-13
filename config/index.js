@@ -31,3 +31,5 @@ export const cloudinaryApiSecret = process.env.CLOUDINARY_API_SECRET;
 export const cloudinaryCloudName = process.env.CLOUDINARY_CLOUD_NAME;
 export const sendgridApiKey = process.env.SENDGRID_API_KEY;
 export const sendgridVerifiedSender = process.env.SENDGRID_VERIFIED_SENDER;
+export const tokenIssuer = process.env.TOKEN_ISSUER;
+export const tokenSecret = process.env.TOKEN_SECRET;
