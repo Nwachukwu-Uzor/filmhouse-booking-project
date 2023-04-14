@@ -4,17 +4,27 @@ const { model, Schema } = mongoose;
 import { generateIdentificationCode } from "../utils/generateIdentificationCode.js";
 
 const eventSchema = new Schema({
-  eventCode: {
+  code: {
     type: String,
     // required: true,
   },
-  eventName: {
+  name: {
     type: String,
     required: true,
   },
-  eventDescription: {
+  description: {
     type: String,
     required: true,
+  },
+  banner: {
+    required: true,
+    type: Schema.Types.ObjectId,
+    ref: "Image",
+  },
+  galleryImages: {
+    required: true,
+    type: [Schema.Types.ObjectId],
+    ref: "Image",
   },
   startDate: {
     type: Date,
@@ -38,17 +48,17 @@ const eventSchema = new Schema({
 eventSchema.pre("save", async function (next) {
   const event = this;
 
-  let eventCode = generateIdentificationCode(20, "FHE");
+  let code = generateIdentificationCode(20, "FHE");
 
   while (
     await event.constructor.findOne({
-      eventCode,
+      code,
     })
   ) {
-    eventCode = generateIdentificationCode(20, "FHE");
+    code = generateIdentificationCode(20, "FHE");
   }
 
-  event.eventCode = eventCode;
+  event.code = code;
   next();
 });
 

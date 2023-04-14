@@ -1,6 +1,7 @@
+import fs from "fs";
 import { validationResult } from "express-validator";
 
-import { EventModel } from "../models/index.js";
+import { EventModel, ImageModel } from "../models/index.js";
 import {
   environment,
   location,
@@ -9,6 +10,7 @@ import {
   tokenSecret,
 } from "../../config/index.js";
 import { developmentLogger, productionLogger } from "../utils/logger.js";
+import { uploadImage } from "../services/imageService.js";
 
 export const createEvent = async (req, res) => {
   const errors = validationResult(req);
@@ -17,15 +19,69 @@ export const createEvent = async (req, res) => {
     return res.status(400).json({ message: errors.array() });
   }
 
-  const { eventName, eventDescription, startDate, endDate } = req.body;
+  const { name, description, startDate, endDate } = req.body;
 
   try {
-    const newEvent = await EventModel.create({
-      eventName,
-      eventDescription,
+    const { image, images } = req.files;
+    if (!image) {
+      return res
+        .status(400)
+        .json({ message: "Please provide the banner for this event" });
+    }
+
+    if (!images) {
+      return res.status(400).json({
+        message:
+          "Please provide the gallery images for this event for this event",
+      });
+    }
+
+    const newEventData = {
+      name,
+      description,
       startDate,
       endDate,
+    };
+
+    const uploader = async (path) => uploadImage(path, "Images");
+
+    const newPath = await uploader(image[0]?.path);
+    fs.unlink(image[0]?.path, (err) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log("Deleted");
+      }
     });
+
+    const bannerImage = await ImageModel.create({
+      url: newPath?.url,
+    });
+
+    newEventData.banner = bannerImage._id;
+
+    const eventGalleryImage = [];
+
+    for (let galleryImage of images) {
+      const newPath = await uploader(galleryImage?.path);
+      fs.unlink(galleryImage?.path, (err) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log("Deleted");
+        }
+      });
+
+      const gallery = await ImageModel.create({
+        url: newPath?.url,
+      });
+
+      eventGalleryImage.push(gallery._id);
+    }
+
+    newEventData.galleryImages = eventGalleryImage;
+
+    const newEvent = await EventModel.create(newEventData);
 
     if (!newEvent) {
       return res.status(400).json({ message: "Unable to create event" });
@@ -57,7 +113,10 @@ export const getEventById = async (req, res) => {
   const { eventId } = req.params;
 
   try {
-    const event = await EventModel.findById(eventId);
+    const event = await EventModel.findById(eventId)
+      .select("-__v -createdOn")
+      .populate({ path: "banner", select: "url -_id" })
+      .populate({ path: "galleryImages", select: "url -_id" });
 
     if (!event) {
       return res.status(404).json({ message: "Invalid event" });
@@ -65,7 +124,35 @@ export const getEventById = async (req, res) => {
 
     return res.status(200).json({
       data: {
-        event: event._doc,
+        events: event._doc,
+      },
+    });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: error?.message ?? "Something went wrong" });
+  }
+};
+
+export const getEventsList = async (req, res) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ message: errors.array() });
+  }
+
+  const { eventId } = req.params;
+
+  try {
+    const event = await EventModel.findById(eventId).select("name description");
+
+    if (!event) {
+      return res.status(404).json({ message: "Invalid event" });
+    }
+
+    return res.status(200).json({
+      data: {
+        events: event._doc,
       },
     });
   } catch (error) {

@@ -1,5 +1,5 @@
 import express from "express";
-import passport from "passport";
+import { passportSetup } from "../utils/passport.js";
 import { check } from "express-validator";
 
 import { createAccount, loginUser } from "../controllers/Auth.Controller.js";
@@ -41,7 +41,7 @@ router.post(
 );
 
 // OAuth Routes
-router.get("/login/failed", (req, res) => {
+router.get("/login/failed", (_req, res) => {
   return res.status(404).json({ message: "Login Failed" });
 });
 
@@ -61,12 +61,12 @@ router.get("/login/success", (req, res) => {
 
 router.get(
   "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
+  passportSetup.authenticate("google", { scope: ["profile", "email"] })
 );
 
 router.get(
   "/google/callback",
-  passport.authenticate("google", {
+  passportSetup.authenticate("google", {
     successRedirect: clientUrl,
     failureRedirect: "/login/failed",
   })
@@ -74,12 +74,12 @@ router.get(
 
 router.get(
   "/facebook",
-  passport.authenticate("facebook", { scope: ["profile"] })
+  passportSetup.authenticate("facebook", { scope: ["profile"] })
 );
 
 router.get(
   "/facebook/callback",
-  passport.authenticate("facebook", {
+  passportSetup.authenticate("facebook", {
     successRedirect: clientUrl,
     failureRedirect: "/login/failed",
   })

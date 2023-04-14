@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import { check, param } from "express-validator";
+import { upload } from "../../config/multer.js";
 
 import { createEvent, getEventById } from "../controllers/Event.Controller.js";
 
@@ -8,12 +9,13 @@ const router = express.Router();
 
 router.post(
   "/create",
-  check("eventName")
+  upload.fields([{ name: "image", maxCount: 1 }, { name: "images" }]),
+  check("name")
     .exists()
     .withMessage("Please provide a valid event name")
     .isLength({ min: 5 })
     .withMessage("Event name should be a minimum is 5 characters"),
-  check("eventDescription")
+  check("description")
     .exists()
     .withMessage("Please provide a valid event description")
     .isLength({ min: 5 })
