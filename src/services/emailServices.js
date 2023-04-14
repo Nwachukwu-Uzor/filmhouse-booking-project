@@ -54,7 +54,7 @@ export const sendMail = async (
       subject: emailSubject,
       text: "Email text",
       from: sendgridVerifiedSender,
-      html: emailBody
+      html: emailBody,
     };
     sgMail
       .send(msg)

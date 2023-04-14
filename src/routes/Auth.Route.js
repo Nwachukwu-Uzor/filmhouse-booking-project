@@ -11,6 +11,7 @@ const router = express.Router();
 
 router.post(
   "/register",
+  upload.single("image"),
   check("password")
     .exists()
     .withMessage("Password is required")
@@ -21,7 +22,6 @@ router.post(
     .withMessage("Email is required")
     .isEmail()
     .withMessage("Please provide a valid email address"),
-  upload.single("image"),
   createAccount
 );
 
