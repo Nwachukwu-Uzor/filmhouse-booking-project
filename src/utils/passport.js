@@ -1,4 +1,5 @@
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import jwt from "jsonwebtoken";
 import { Strategy as FacebookStrategy } from "passport-facebook";
 import passport from "passport";
 import {
@@ -7,6 +8,8 @@ import {
   location,
   facebookAppId,
   facebookAppSecret,
+  tokenIssuer,
+  tokenSecret,
 } from "../../config/index.js";
 import { UserModel } from "../models/index.js";
 
@@ -25,11 +28,17 @@ passport.use(
         });
 
         if (existingUser) {
-          if (!existingUser?.googleId.trim().length) {
-            existingUser.googleId = profile?.id;
-            await existingUser.save();
-          }
-          return cb(null, existingUser);
+          const token = jwt.sign(
+            {
+              user_id: existingUser._id,
+              email: existingUser._doc.email,
+              phone: existingUser._doc.phone,
+            },
+            tokenSecret,
+            { issuer: tokenIssuer, expiresIn: "2h" }
+          );
+
+          return cb(null, token);
         }
         const newUser = await UserModel.create({
           googleId: profile?.id,
@@ -38,7 +47,17 @@ passport.use(
           username: profile?._json?.email,
         });
 
-        return cb(null, newUser);
+        const token = jwt.sign(
+          {
+            user_id: newUser._id,
+            email: newUser._doc.email,
+            phone: newUser._doc.phone,
+          },
+          tokenSecret,
+          { issuer: tokenIssuer, expiresIn: "2h" }
+        );
+
+        return cb(null, token);
       } catch (error) {
         cb(error, null);
       }
@@ -69,7 +88,17 @@ passport.use(
           await existingUser.save();
         }
 
-        return cb(null, newUser);
+        const token = jwt.sign(
+          {
+            user_id: existingUser._id,
+            email: existingUser._doc.email,
+            phone: existingUser._doc.phone,
+          },
+          tokenSecret,
+          { issuer: tokenIssuer, expiresIn: "2h" }
+        );
+
+        return cb(null, token);
       } catch (error) {
         cb(error, null);
       }
