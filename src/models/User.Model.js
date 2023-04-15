@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 
 const { Schema, model } = mongoose;
 
-const userSchema = Schema({
+const userSchema = new Schema({
   avatar: {
     ref: "Image",
     type: Schema.Types.ObjectId,
