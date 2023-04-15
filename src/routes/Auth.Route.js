@@ -60,13 +60,26 @@ router.get("/login/success", (req, res) => {
 });
 
 router.get(
-  "/google",
-  passportSetup.authenticate("google", { scope: ["profile", "email"] })
+  "/google/signup",
+  passportSetup.authenticate("google-signup", { scope: ["profile", "email"] })
 );
 
 router.get(
-  "/google/callback",
-  passportSetup.authenticate("google", {
+  "/google/signup/callback",
+  passportSetup.authenticate("google-signup", {
+    successRedirect: clientUrl,
+    failureRedirect: "/login/failed",
+  })
+);
+
+router.get(
+  "/google/login",
+  passportSetup.authenticate("google-login", { scope: ["profile", "email"] })
+);
+
+router.get(
+  "/google/login/callback",
+  passportSetup.authenticate("google-login", {
     successRedirect: clientUrl,
     failureRedirect: "/login/failed",
   })

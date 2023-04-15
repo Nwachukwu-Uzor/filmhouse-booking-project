@@ -6,16 +6,17 @@ import {
   googleClientSecret,
   location,
   facebookAppId,
-  facebookAppSecret
+  facebookAppSecret,
 } from "../../config/index.js";
-import {UserModel} from "../models/index.js";
+import { UserModel } from "../models/index.js";
 
 passport.use(
+  "google-signup",
   new GoogleStrategy(
     {
       clientID: googleClientId,
       clientSecret: googleClientSecret,
-      callbackURL: `/api/auth/google/callback`,
+      callbackURL: `/api/auth/google/signup/callback`,
     },
     async function (accessToken, refreshToken, profile, /**done */ cb) {
       try {
@@ -44,6 +45,38 @@ passport.use(
     }
   )
 );
+
+passport.use(
+  "google-login",
+  new GoogleStrategy(
+    {
+      clientID: googleClientId,
+      clientSecret: googleClientSecret,
+      callbackURL: `/api/auth/google/login/callback/`,
+    },
+    async function (accessToken, refreshToken, profile, /**done */ cb) {
+      try {
+        const existingUser = await UserModel.findOne({
+          $or: [{ email: profile?._json?.email }, { googleId: profile?.id }],
+        });
+
+        if (!existingUser) {
+          return new Error("No user with this email, please sign up first.");
+        }
+
+        if (!existingUser?.googleId.trim().length) {
+          existingUser.googleId = profile?.id;
+          await existingUser.save();
+        }
+
+        return cb(null, newUser);
+      } catch (error) {
+        cb(error, null);
+      }
+    }
+  )
+);
+
 passport.use(
   new FacebookStrategy(
     {
