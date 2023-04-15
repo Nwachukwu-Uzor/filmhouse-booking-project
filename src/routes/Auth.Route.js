@@ -1,10 +1,16 @@
 import express from "express";
+import mongoose from "mongoose";
 import { passportSetup } from "../utils/passport.js";
-import { check } from "express-validator";
+import { check, query } from "express-validator";
 
-import { createAccount, loginUser } from "../controllers/Auth.Controller.js";
+import {
+  createAccount,
+  loginUser,
+  verifyAccountEmail,
+} from "../controllers/Auth.Controller.js";
 import { clientUrl } from "../../config/index.js";
 import { upload } from "../../config/multer.js";
+import { validationErrorHandler } from "../middlewares/validationErrorHandler.js";
 import { auth } from "../middlewares/auth.js";
 
 const router = express.Router();
@@ -22,6 +28,7 @@ router.post(
     .withMessage("Email is required")
     .isEmail()
     .withMessage("Please provide a valid email address"),
+  validationErrorHandler,
   createAccount
 );
 
@@ -37,7 +44,24 @@ router.post(
     .withMessage("Email is required")
     .isEmail()
     .withMessage("Please provide a valid email address"),
+  validationErrorHandler,
   loginUser
+);
+
+router.get(
+  "/verify-email",
+  query("user_id")
+    .exists()
+    .withMessage("User Id must be provided in the query")
+    .custom((value, _) => {
+      if (!mongoose.isValidObjectId(value)) {
+        throw new Error("Invalid Event Id");
+      }
+      return true;
+    }),
+  query("token").exists().withMessage("Please provide a valid token"),
+  validationErrorHandler,
+  verifyAccountEmail
 );
 
 // OAuth Routes

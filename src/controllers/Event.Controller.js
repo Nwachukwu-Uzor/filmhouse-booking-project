@@ -13,12 +13,6 @@ import { developmentLogger, productionLogger } from "../utils/logger.js";
 import { uploadImage } from "../services/imageService.js";
 
 export const createEvent = async (req, res) => {
-  const errors = validationResult(req);
-
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ message: errors.array() });
-  }
-
   const { name, description, startDate, endDate } = req.body;
 
   try {
@@ -104,12 +98,6 @@ export const createEvent = async (req, res) => {
 };
 
 export const getEventById = async (req, res) => {
-  const errors = validationResult(req);
-
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ message: errors.array() });
-  }
-
   const { eventId } = req.params;
 
   try {
@@ -155,6 +143,32 @@ export const getEventsList = async (req, res) => {
         events: event._doc,
       },
     });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: error?.message ?? "Something went wrong" });
+  }
+};
+
+export const getEvents = async (req, res) => {
+  try {
+    const page = req?.query?.page ?? 1;
+    const size = req?.query?.size ?? 15;
+
+    const events = await EventModel.find()
+      .limit(size)
+      .skip((page - 1) * size)
+      .populate({ path: "banner", select: "url -_id" })
+      .populate({ path: "galleryImages", select: "url -_id" })
+      .exec();
+
+    const eventsCount = await EventModel.count();
+
+    if (!events) {
+      return res.status(404).json({ message: "No more events available." });
+    }
+
+    return res.status(200).json({ event: events, totalCount: eventsCount });
   } catch (error) {
     return res
       .status(500)

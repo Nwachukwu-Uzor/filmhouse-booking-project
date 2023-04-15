@@ -17,11 +17,6 @@ import { uploadImage } from "../services/imageService.js";
 import { sendMail } from "../services/index.js";
 
 export const createAccount = async (req, res) => {
-  const errors = validationResult(req);
-
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ message: errors.array() });
-  }
 
   const { email, password, username } = req.body;
 
@@ -73,7 +68,7 @@ export const createAccount = async (req, res) => {
 
     await newUser.save();
 
-    const confirmUrl = `${clientUrl}/confirm-account?token=${confirmationToken._doc.token}&&user_id=${newUser._id}`;
+    const confirmUrl = `${clientUrl}/register/confirm-account?token=${confirmationToken._doc.token}&user_id=${newUser._id}`;
 
     const emailParameters = {
       email,
@@ -158,5 +153,37 @@ export const loginUser = async (req, res) => {
     }
 
     return res.status(500).json({ message: error.message });
+  }
+};
+
+export const verifyAccountEmail = async (req, res) => {
+
+  const { token, user_id } = req.query;
+
+  try {
+    const tokenExists = await TokenModel.findOne({
+      $and: [{ token: token }, { user: user_id }],
+    });
+    if (!tokenExists) {
+      return res.status(404).json({ message: "Invalid token" });
+    }
+
+    const user = await UserModel.findById(user_id);
+
+    if (!user) {
+      return res.status(404).json({ message: "Invalid token" });
+    }
+
+    user.emailConfirmed = true;
+
+    await user.save();
+
+    return res.status(200).json({
+      message: `Your email ${user._doc.email} has been successfully confirmed`,
+    });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: error?.message ?? "An Error has occurred" });
   }
 };

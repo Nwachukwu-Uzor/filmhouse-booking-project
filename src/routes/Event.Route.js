@@ -2,8 +2,13 @@ import express from "express";
 import mongoose from "mongoose";
 import { check, param } from "express-validator";
 import { upload } from "../../config/multer.js";
+import { validationErrorHandler } from "../middlewares/validationErrorHandler.js";
 
-import { createEvent, getEventById } from "../controllers/Event.Controller.js";
+import {
+  createEvent,
+  getEventById,
+  getEvents,
+} from "../controllers/Event.Controller.js";
 
 const router = express.Router();
 
@@ -44,6 +49,7 @@ router.post(
       }
       return true;
     }),
+  validationErrorHandler,
   createEvent
 );
 
@@ -58,7 +64,10 @@ router.get(
       }
       return true;
     }),
+  validationErrorHandler,
   getEventById
 );
+
+router.get("/events", getEvents);
 
 export default router;
