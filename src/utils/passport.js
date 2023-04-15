@@ -11,7 +11,7 @@ import {
   tokenIssuer,
   tokenSecret,
 } from "../../config/index.js";
-import { UserModel } from "../models/index.js";
+import { UserModel, ImageModel } from "../models/index.js";
 
 passport.use(
   "google-signup",
@@ -40,13 +40,24 @@ passport.use(
 
           return cb(null, token);
         }
-        const newUser = await UserModel.create({
+        const userAvatar = profile?._json?.picture
+          ? await ImageModel.create({
+              url: profile?._json?.picture,
+            })
+          : null;
+
+        const newUser = new UserModel({
           googleId: profile?.id,
           email: profile?._json?.email,
           emailConfirmed: profile?._json?.email_verified,
           username: profile?._json?.email,
         });
 
+        if (userAvatar) {
+          newUser.avatar = userAvatar?._id;
+        }
+
+        await newUser.save();
         const token = jwt.sign(
           {
             user_id: newUser._id,
