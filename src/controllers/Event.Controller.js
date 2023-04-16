@@ -104,16 +104,14 @@ export const getEventById = async (req, res) => {
     const event = await EventModel.findById(eventId)
       .select("-__v -createdOn")
       .populate({ path: "banner", select: "url -_id" })
-      .populate({ path: "galleryImages", select: "url -_id" });
+      .populate({ path: "galleryImages", select: "url _id" });
 
     if (!event) {
       return res.status(404).json({ message: "Invalid event" });
     }
 
     return res.status(200).json({
-      data: {
-        events: event._doc,
-      },
+      event: event._doc,
     });
   } catch (error) {
     return res
@@ -126,16 +124,14 @@ export const getEventsList = async (req, res) => {
   const { eventId } = req.params;
 
   try {
-    const event = await EventModel.findById(eventId).select("name description");
+    const events = await EventModel.find().select("name description");
 
-    if (!event) {
+    if (!events) {
       return res.status(404).json({ message: "Invalid event" });
     }
 
     return res.status(200).json({
-      data: {
-        events: event._doc,
-      },
+      events: events
     });
   } catch (error) {
     return res
@@ -167,6 +163,18 @@ export const getEvents = async (req, res) => {
     return res
       .status(200)
       .json({ events: events, totalCount: eventsCount, page, totalPages });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: error?.message ?? "Something went wrong" });
+  }
+};
+
+// This route returns a list of events ids for the get static paths method for next js
+export const getEventsIds = async (req, res) => {
+  try {
+    const events = await EventModel.find().select("_id");
+    return res.status(200).json({ eventIds: events });
   } catch (error) {
     return res
       .status(500)

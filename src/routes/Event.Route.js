@@ -9,6 +9,7 @@ import {
   getEventById,
   getEvents,
   getEventsList,
+  getEventsIds,
 } from "../controllers/Event.Controller.js";
 
 const router = express.Router();
@@ -70,5 +71,6 @@ router.get(
 );
 
 router.get("/events", getEvents);
+router.get("/eventIds", getEventsIds);
 
 export default router;
