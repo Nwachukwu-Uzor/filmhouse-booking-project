@@ -14,7 +14,11 @@ const tokenSchema = new Schema({
     type: Schema.Types.ObjectId,
     required: true,
   },
-  createdAt: { type: Date, default: Date.now, expires: "2h" },
+  createdAt: { type: Date, default: Date.now },
+  expiresAt: {
+    type: Date,
+    default: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
+  },
 });
 
 export const TokenModel = model("Token", tokenSchema);

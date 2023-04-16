@@ -123,12 +123,6 @@ export const getEventById = async (req, res) => {
 };
 
 export const getEventsList = async (req, res) => {
-  const errors = validationResult(req);
-
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ message: errors.array() });
-  }
-
   const { eventId } = req.params;
 
   try {
@@ -156,19 +150,23 @@ export const getEvents = async (req, res) => {
     const size = req?.query?.size ?? 15;
 
     const events = await EventModel.find()
+      .select("-galleryImages -__v")
       .limit(size)
       .skip((page - 1) * size)
       .populate({ path: "banner", select: "url -_id" })
-      .populate({ path: "galleryImages", select: "url -_id" })
       .exec();
 
     const eventsCount = await EventModel.count();
+
+    const totalPages = Math.ceil(eventsCount / size);
 
     if (!events) {
       return res.status(404).json({ message: "No more events available." });
     }
 
-    return res.status(200).json({ event: events, totalCount: eventsCount });
+    return res
+      .status(200)
+      .json({ events: events, totalCount: eventsCount, page, totalPages });
   } catch (error) {
     return res
       .status(500)

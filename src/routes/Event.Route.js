@@ -8,6 +8,7 @@ import {
   createEvent,
   getEventById,
   getEvents,
+  getEventsList,
 } from "../controllers/Event.Controller.js";
 
 const router = express.Router();
@@ -54,7 +55,7 @@ router.post(
 );
 
 router.get(
-  "/:eventId",
+  "/details/:eventId",
   param("eventId")
     .exists()
     .withMessage("Event Id is required")

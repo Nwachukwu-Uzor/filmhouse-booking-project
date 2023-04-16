@@ -6,26 +6,35 @@ const BookingSchema = new Schema({
     type: String,
     required: true,
   },
-  userName: {
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  },
+  userEmail: {
     type: String,
-    required: true,
+    required: [
+      function () {
+        return (
+          this.user === null ||
+          this.user.trim().length === 0 ||
+          !mongoose.isValidObjectId(this.user)
+        );
+      },
+    ],
   },
   eventId: {
-    type: String,
+    type: Schema.Types.ObjectId,
+    ref: "Event",
     required: true,
   },
   createdAt: {
     type: Date,
     default: Date.now(),
   },
-  isActive: {
-    type: Boolean,
-    default: false,
-  },
   status: {
     type: String,
-    enum: ["Pending", "Approved", "Failed"],
-    default: "Pending",
+    enum: ["Used", "Canceled", "Unused"],
+    default: "Unused",
   },
 });
 

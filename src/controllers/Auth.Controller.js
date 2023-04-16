@@ -17,7 +17,6 @@ import { uploadImage } from "../services/imageService.js";
 import { sendMail } from "../services/index.js";
 
 export const createAccount = async (req, res) => {
-
   const { email, password, username } = req.body;
 
   try {
@@ -101,7 +100,7 @@ export const createAccount = async (req, res) => {
     return res.status(201).json({
       data: {
         message:
-          "Successfully registered, check your email for confirmation link.",
+          "Successfully registered, check your email for confirmation link, it expires in 24 hours",
         token,
       },
     });
@@ -157,7 +156,6 @@ export const loginUser = async (req, res) => {
 };
 
 export const verifyAccountEmail = async (req, res) => {
-
   const { token, user_id } = req.query;
 
   try {
@@ -165,13 +163,32 @@ export const verifyAccountEmail = async (req, res) => {
       $and: [{ token: token }, { user: user_id }],
     });
     if (!tokenExists) {
-      return res.status(404).json({ message: "Invalid token" });
+      return res.status(404).json({
+        message: "Invalid token",
+        hasExpired: false,
+        tokenValid: true,
+      });
     }
 
     const user = await UserModel.findById(user_id);
 
     if (!user) {
-      return res.status(404).json({ message: "Invalid token" });
+      return res.status(404).json({
+        message: "Invalid token",
+        hasExpired: false,
+        tokenValid: false,
+      });
+    }
+
+    const hasTokenExpired =
+      new Date().getTime() > tokenExists.expiresAt.getTime();
+
+    if (hasTokenExpired) {
+      return res.status(400).json({
+        message: "Token has expired, please request for an new one.",
+        hasExpired: true,
+        tokenValid: true,
+      });
     }
 
     user.emailConfirmed = true;
