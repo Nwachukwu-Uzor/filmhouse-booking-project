@@ -6,7 +6,6 @@ import { generateIdentificationCode } from "../utils/generateIdentificationCode.
 const eventSchema = new Schema({
   code: {
     type: String,
-    // required: true,
   },
   name: {
     type: String,

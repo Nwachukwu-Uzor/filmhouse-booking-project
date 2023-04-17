@@ -1,14 +1,23 @@
 import mongoose from "mongoose";
 const { model, Schema } = mongoose;
 
-const BookingSchema = new Schema({
+import { generateIdentificationCode } from "../utils/generateIdentificationCode.js";
+
+const bookingSchema = new Schema({
   bookingNumber: {
     type: String,
-    required: true,
   },
   user: {
     type: Schema.Types.ObjectId,
     ref: "User",
+  },
+  ticket: {
+    type: Schema.Types.ObjectId,
+    ref: "Ticket",
+  },
+  price: {
+    type: Number,
+    required: true,
   },
   userEmail: {
     type: String,
@@ -22,9 +31,9 @@ const BookingSchema = new Schema({
       },
     ],
   },
-  eventId: {
+  bookingId: {
     type: Schema.Types.ObjectId,
-    ref: "Event",
+    ref: "Booking",
     required: true,
   },
   createdAt: {
@@ -38,4 +47,21 @@ const BookingSchema = new Schema({
   },
 });
 
-export const BookingModel = model("Booking", BookingSchema);
+bookingSchema.pre("save", async function (next) {
+  const booking = this;
+
+  let bookingNumber = generateIdentificationCode(20, "FHB");
+
+  while (
+    await booking.constructor.findOne({
+      bookingNumber,
+    })
+  ) {
+    code = generateIdentificationCode(20, "FHB");
+  }
+
+  booking.bookingNumber = bookingNumber;
+  next();
+});
+
+export const BookingModel = model("Booking", bookingSchema);

@@ -8,9 +8,15 @@ import cookieSession from "cookie-session";
 import { productionLogger, developmentLogger } from "./src/utils/logger.js";
 import { requestBodyLogger } from "./src/middlewares/requestBodyLogger.js";
 import { port, environment } from "./config/index.js";
-import { bookingRouter, authRouter, eventRouter } from "./src/routes/index.js";
+import {
+  bookingRouter,
+  authRouter,
+  eventRouter,
+  ticketRouter,
+} from "./src/routes/index.js";
 import { dbConnection } from "./dbConnection.js";
 import { errorHandler } from "./src/middlewares/errorHandler.js";
+import { seedTicketTypes } from "./src/utils/seedTicketType.js";
 
 const app = express();
 
@@ -86,6 +92,9 @@ app.use("/api/booking", bookingRouter);
 // Registers the route for events
 app.use("/api/event", eventRouter);
 
+// Registers the route for tickets
+app.use("/api/ticket", ticketRouter);
+
 app.listen(port, () => {
   dbConnection();
   if (environment === "Development") {
@@ -93,6 +102,8 @@ app.listen(port, () => {
   }
   console.log(`🚀 App is running at ${port}`);
 });
+
+seedTicketTypes();
 
 // 404 Route
 app.use("*", (_req, res) => {
