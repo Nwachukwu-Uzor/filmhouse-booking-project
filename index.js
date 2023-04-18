@@ -7,7 +7,7 @@ import cookieSession from "cookie-session";
 
 import { productionLogger, developmentLogger } from "./src/utils/logger.js";
 import { requestBodyLogger } from "./src/middlewares/requestBodyLogger.js";
-import { port, environment } from "./config/index.js";
+import { port, environment, allowOrigins } from "./config/index.js";
 import {
   bookingRouter,
   authRouter,
@@ -23,13 +23,20 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(
-  cors({
-    origin: "http://localhost:3000",
-    methods: "GET, POST, PUT, DELETE",
-    credentials: true,
-  })
-);
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (allowOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: "GET, POST, PUT, DELETE",
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 app.use(
   cookieSession({

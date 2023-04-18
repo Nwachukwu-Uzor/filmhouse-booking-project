@@ -36,3 +36,4 @@ export const tokenSecret = process.env.TOKEN_SECRET;
 export const superAdminEmail = process.env.SUPER_ADMIN_EMAIL;
 export const superAdminName = process.env.SUPER_ADMIN_USERNAME;
 export const superAdminPassword = process.env.SUPER_ADMIN_PASSWORD;
+export const allowOrigins = process.env?.ALLOW_ORIGINS.split(",");

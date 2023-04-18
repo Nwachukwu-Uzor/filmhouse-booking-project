@@ -40,9 +40,7 @@ export const loginAdmin = async (req, res) => {
       { issuer: tokenIssuer, expiresIn: "2h" }
     );
 
-    return res
-      .status(200)
-      .json({ data: { token, message: "Login Successful" } });
+    return res.status(200).json({ token, message: "Login Successful" });
   } catch (error) {
     if (environment === "Development") {
       developmentLogger.log("error", JSON.stringify(error));
