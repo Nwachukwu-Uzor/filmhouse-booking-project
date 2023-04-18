@@ -21,6 +21,7 @@ export const seedSuperAdmin = async () => {
       password: superAdminPassword,
       username: superAdminName,
       emailConfirmed: true,
+      roles: ["user", "admin", "superAdmin"],
     });
 
     if (newSuperAdmin) {

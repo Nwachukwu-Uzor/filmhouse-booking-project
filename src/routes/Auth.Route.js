@@ -7,6 +7,7 @@ import {
   createAccount,
   loginUser,
   verifyEmail,
+  loginAdmin,
 } from "../controllers/Auth/index.js";
 import { clientUrl } from "../../config/index.js";
 import { upload } from "../../config/multer.js";
@@ -46,6 +47,22 @@ router.post(
     .withMessage("Please provide a valid email address"),
   validationErrorHandler,
   loginUser
+);
+
+router.post(
+  "/login/admin",
+  check("password")
+    .exists()
+    .withMessage("Password is required")
+    .isLength({ min: 7 })
+    .withMessage("Password must be at least 7 characters"),
+  check("email")
+    .exists()
+    .withMessage("Email is required")
+    .isEmail()
+    .withMessage("Please provide a valid email address"),
+  validationErrorHandler,
+  loginAdmin
 );
 
 router.get(
