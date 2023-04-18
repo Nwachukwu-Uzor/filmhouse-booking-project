@@ -7,10 +7,10 @@ import { validationErrorHandler } from "../middlewares/validationErrorHandler.js
 import {
   createEvent,
   getEventById,
-  getEvents,
-  getEventsList,
   getEventsIds,
-} from "../controllers/Event.Controller.js";
+  getEvents,
+  getEventsList
+} from "../controllers/Events/index.js";
 
 const router = express.Router();
 

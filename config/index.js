@@ -33,3 +33,6 @@ export const sendgridApiKey = process.env.SENDGRID_API_KEY;
 export const sendgridVerifiedSender = process.env.SENDGRID_VERIFIED_SENDER;
 export const tokenIssuer = process.env.TOKEN_ISSUER;
 export const tokenSecret = process.env.TOKEN_SECRET;
+export const superAdminEmail = process.env.SUPER_ADMIN_EMAIL;
+export const superAdminName = process.env.SUPER_ADMIN_USERNAME;
+export const superAdminPassword = process.env.SUPER_ADMIN_PASSWORD;

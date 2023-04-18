@@ -6,8 +6,8 @@ import { check, query } from "express-validator";
 import {
   createAccount,
   loginUser,
-  verifyAccountEmail,
-} from "../controllers/Auth.Controller.js";
+  verifyEmail,
+} from "../controllers/Auth/index.js";
 import { clientUrl } from "../../config/index.js";
 import { upload } from "../../config/multer.js";
 import { validationErrorHandler } from "../middlewares/validationErrorHandler.js";
@@ -61,7 +61,7 @@ router.get(
     }),
   query("token").exists().withMessage("Please provide a valid token"),
   validationErrorHandler,
-  verifyAccountEmail
+  verifyEmail
 );
 
 // OAuth Routes

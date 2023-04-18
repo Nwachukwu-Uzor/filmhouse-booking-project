@@ -17,6 +17,7 @@ import {
 import { dbConnection } from "./dbConnection.js";
 import { errorHandler } from "./src/middlewares/errorHandler.js";
 import { seedTicketTypes } from "./src/utils/seedTicketType.js";
+import { seedSuperAdmin } from "./src/utils/seedSuperAdmin.js";
 
 const app = express();
 
@@ -103,6 +104,7 @@ app.listen(port, () => {
   console.log(`🚀 App is running at ${port}`);
 });
 
+seedSuperAdmin();
 seedTicketTypes();
 
 // 404 Route

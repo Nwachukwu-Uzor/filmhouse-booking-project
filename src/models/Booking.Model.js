@@ -10,10 +10,18 @@ const bookingSchema = new Schema({
   user: {
     type: Schema.Types.ObjectId,
     ref: "User",
+    required: [
+      function () {
+        return (
+          this?.userEmail === null || this?.userEmail?.trim()?.length === 0
+        );
+      },
+    ],
   },
   ticket: {
     type: Schema.Types.ObjectId,
     ref: "Ticket",
+    required: true,
   },
   price: {
     type: Number,
@@ -24,17 +32,19 @@ const bookingSchema = new Schema({
     required: [
       function () {
         return (
-          this.user === null ||
-          this.user.trim().length === 0 ||
+          this?.user === null ||
+          this?.user?.trim()?.length === 0 ||
           !mongoose.isValidObjectId(this.user)
         );
       },
     ],
-  },
-  bookingId: {
-    type: Schema.Types.ObjectId,
-    ref: "Booking",
-    required: true,
+    validate: {
+      validator: function (v) {
+        // custom regex validation
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+      },
+      message: (props) => `${props.value} is not a valid email address!`,
+    },
   },
   createdAt: {
     type: Date,

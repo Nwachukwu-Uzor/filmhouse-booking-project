@@ -1,5 +1,5 @@
 import express from "express";
-import { getTicketTypes } from "../controllers/Ticket.Controller.js";
+import { getTicketTypes } from "../controllers/Tickets/index.js";
 
 const router = express.Router();
 

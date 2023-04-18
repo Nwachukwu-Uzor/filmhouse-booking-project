@@ -1,4 +1,4 @@
-import { TicketTypeModel } from "../models/index.js";
+import { TicketTypeModel } from "../../models/index.js";
 
 export const getTicketTypes = async (_req, res) => {
   try {
