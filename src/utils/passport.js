@@ -43,6 +43,7 @@ passport.use(
         const userAvatar = profile?._json?.picture
           ? await ImageModel.create({
               url: profile?._json?.picture,
+              publicId: ""
             })
           : null;
 

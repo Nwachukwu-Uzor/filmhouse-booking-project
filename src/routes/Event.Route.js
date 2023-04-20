@@ -9,7 +9,8 @@ import {
   getEventById,
   getEventsIds,
   getEvents,
-  getEventsList
+  getEventsList,
+  deleteEvent,
 } from "../controllers/Events/index.js";
 
 const router = express.Router();
@@ -72,5 +73,19 @@ router.get(
 
 router.get("/events", getEvents);
 router.get("/eventIds", getEventsIds);
+router.delete(
+  "/:eventId",
+  param("eventId")
+    .exists()
+    .withMessage("Event Id is required")
+    .custom((value, _) => {
+      if (!mongoose.isValidObjectId(value)) {
+        throw new Error("Invalid Event Id");
+      }
+      return true;
+    }),
+  validationErrorHandler,
+  deleteEvent
+);
 
 export default router;

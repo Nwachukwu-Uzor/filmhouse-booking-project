@@ -53,6 +53,7 @@ export const createAccount = async (req, res) => {
       });
       const userAvatar = await ImageModel.create({
         url: newPath?.url,
+        publicId: newPath?.public_id,
       });
 
       newUser.avatar = userAvatar?._id;

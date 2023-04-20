@@ -9,6 +9,10 @@ const imageSchema = new Schema({
     type: String,
     required: true,
   },
+  publicId: {
+    type: String,
+    default: "",
+  },
   uploadedAt: { type: Date, default: Date.now },
 });
 

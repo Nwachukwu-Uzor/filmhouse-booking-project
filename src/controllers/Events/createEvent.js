@@ -43,6 +43,7 @@ export const createEvent = async (req, res) => {
 
     const bannerImage = await ImageModel.create({
       url: newPath?.url,
+      publicId: newPath?.public_id,
     });
 
     newEventData.banner = bannerImage._id;
@@ -61,6 +62,7 @@ export const createEvent = async (req, res) => {
 
       const gallery = await ImageModel.create({
         url: newPath?.url,
+        publicId: newPath?.public_id,
       });
 
       eventGalleryImage.push(gallery._id);
