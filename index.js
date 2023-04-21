@@ -7,7 +7,12 @@ import cookieSession from "cookie-session";
 
 import { productionLogger, developmentLogger } from "./src/utils/logger.js";
 import { requestBodyLogger } from "./src/middlewares/requestBodyLogger.js";
-import { port, environment, allowOrigins } from "./config/index.js";
+import {
+  port,
+  environment,
+  allowOrigins,
+  vercelDeploy,
+} from "./config/index.js";
 import {
   bookingRouter,
   authRouter,
@@ -26,7 +31,11 @@ app.use(express.urlencoded({ extended: false }));
 
 const corsOptions = {
   origin: function (origin, callback) {
-    if (allowOrigins.indexOf(origin) !== -1 || !origin) {
+    if (
+      allowOrigins.indexOf(origin) !== -1 ||
+      !origin ||
+      origin.toString().toLowerCase().contains(vercelDeploy.toLowerCase())
+    ) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));
