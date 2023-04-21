@@ -27,6 +27,22 @@ export const createTicketForEvent = async (req, res) => {
       });
     }
 
+    const existingTicket = await TicketModel.findOne({
+      $and: [{ event: eventId, type: ticketType }],
+    });
+
+    if (existingTicket) {
+      existingTicket.price = price;
+      await existingTicket.save();
+      res.setHeader(
+        "Location",
+        `${location}/tickets/${eventId}/${existingTicket._id}`
+      );
+      return res.status(201).json({
+        message: `Price updated for ${ticketType?.typeName} ticket for ${event?.name}`,
+      });
+    }
+
     const newTicket = await TicketModel.create({
       type: ticketTypeId,
       event: eventId,
@@ -37,7 +53,7 @@ export const createTicketForEvent = async (req, res) => {
       `${location}/tickets/${eventId}/${newTicket._id}`
     );
     return res.status(201).json({
-      message: `New ${ticketType?.typeName} ticket create for ${event?.name}`,
+      message: `New ${ticketType?.typeName} ticket created for ${event?.name}`,
     });
   } catch (error) {
     if (environment === "Development") {
