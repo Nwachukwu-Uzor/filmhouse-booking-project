@@ -13,6 +13,8 @@ import {
 import { sendMail } from "../../services/index.js";
 import jwt from "jsonwebtoken";
 
+import { deleteFiles } from "../../utils/deleteFiles.js";
+
 export const createAccount = async (req, res) => {
   const { email, password, username } = req.body;
 
@@ -30,10 +32,12 @@ export const createAccount = async (req, res) => {
     const [emailExists, usernameExists] = await Promise.all(promises);
 
     if (emailExists) {
+      deleteFiles();
       return res.status(400).json({ message: "Email already exists" });
     }
 
     if (usernameExists) {
+      deleteFiles();
       return res.status(400).json({ message: "Username already exists" });
     }
 
@@ -44,13 +48,8 @@ export const createAccount = async (req, res) => {
       const file = req.file;
 
       const newPath = await uploader(file?.path);
-      fs.unlink(file?.path, (err) => {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log("Deleted");
-        }
-      });
+
+      deleteFiles();
       const userAvatar = await ImageModel.create({
         url: newPath?.url,
         publicId: newPath?.public_id,
@@ -103,6 +102,7 @@ export const createAccount = async (req, res) => {
       },
     });
   } catch (error) {
+    deleteFiles();
     if (environment === "Development") {
       developmentLogger.log("error", JSON.stringify(error));
     } else {

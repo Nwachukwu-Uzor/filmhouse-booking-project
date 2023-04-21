@@ -1,4 +1,4 @@
-import { EventModel, ImageModel } from "../../models/index.js";
+import { EventModel, ImageModel, TicketModel } from "../../models/index.js";
 import { environment } from "../../../config/index.js";
 import { developmentLogger, productionLogger } from "../../utils/logger.js";
 
@@ -31,6 +31,8 @@ export const deleteEvent = async (req, res) => {
         await ImageModel.findByIdAndDelete(image?._id);
       }
     }
+
+    await TicketModel.deleteMany({ event: eventId });
 
     return res.status(204).json({
       message: "Event deleted successfully",

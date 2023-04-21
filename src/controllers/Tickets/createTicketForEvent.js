@@ -7,6 +7,7 @@ import {
 import { environment, location } from "../../../config/index.js";
 import { developmentLogger, productionLogger } from "../../utils/logger.js";
 
+
 export const createTicketForEvent = async (req, res) => {
   try {
     const { eventId, ticketTypeId, price } = req.body;
@@ -52,6 +53,7 @@ export const createTicketForEvent = async (req, res) => {
       "Location",
       `${location}/tickets/${eventId}/${newTicket._id}`
     );
+
     return res.status(201).json({
       message: `New ${ticketType?.typeName} ticket created for ${event?.name}`,
     });
