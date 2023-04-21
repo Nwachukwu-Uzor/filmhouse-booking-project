@@ -16,7 +16,7 @@ export const getTicketsForEvent = async (req, res) => {
       });
     }
 
-    const tickets = await TicketModel.find({ event: eventId }).populate("type");
+    const tickets = await TicketModel.find({ event: eventId }).select("-__v -event").populate({path: "type", select: "typeName"});
 
     return res.status(200).json({ tickets, event });
   } catch (error) {
