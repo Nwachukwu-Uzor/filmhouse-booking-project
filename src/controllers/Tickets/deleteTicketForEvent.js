@@ -17,7 +17,7 @@ export const deleteTicketForEvent = async (req, res) => {
         message: "Invalid Ticket Id",
       });
     }
-    return res.status(204).json({ message: "Successfully deleted" });
+    return res.status(204).json({ message: "Successfully Deleted Ticket" });
   } catch (error) {
     if (environment === "Development") {
       developmentLogger.log("error", JSON.stringify(error));
