@@ -18,15 +18,6 @@ const bookingSchema = new Schema({
       },
     ],
   },
-  ticket: {
-    type: Schema.Types.ObjectId,
-    ref: "Ticket",
-    required: true,
-  },
-  price: {
-    type: Number,
-    required: true,
-  },
   userEmail: {
     type: String,
     required: [
@@ -49,12 +40,7 @@ const bookingSchema = new Schema({
   createdAt: {
     type: Date,
     default: Date.now(),
-  },
-  status: {
-    type: String,
-    enum: ["Used", "Canceled", "Unused"],
-    default: "Unused",
-  },
+  }
 });
 
 bookingSchema.pre("save", async function (next) {

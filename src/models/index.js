@@ -5,3 +5,4 @@ export { ImageModel } from "./Image.Model.js";
 export { EventModel } from "./Event.Model.js";
 export { TicketTypeModel } from "./TicketType.Model.js";
 export { TicketModel } from "./Ticket.Model.js";
+export { EventTicketModel } from "./EventTicket.Model.js";

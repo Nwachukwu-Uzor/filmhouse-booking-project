@@ -85,7 +85,7 @@ export const createAccount = async (req, res) => {
 
     const token = jwt.sign(
       {
-        user_id: newUser._id,
+        userId: newUser._id,
         email: newUser._doc.email,
         phone: newUser._doc.phone,
       },
